@@ -27,7 +27,7 @@ class DatabaseController extends AbstractController
     public function postDatabases(Request $request): JsonResponse
     {
         $request_params = json_decode($request->getContent(), true);
-
+        return new JsonResponse(['error' => 'Unauthorized'], 401);
         $token_decoder = new TokenDecoder('secret');
         $token = $token_decoder->token_verify($request_params['token']);
         if ($token === false) return new JsonResponse(['status' => 'error', 'error' => 'Unauthorized'], 401);

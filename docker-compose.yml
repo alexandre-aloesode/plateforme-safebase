@@ -1,0 +1,49 @@
+services:
+  front:
+    build:
+      context: ./front
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./front:/app
+    depends_on:
+      - db
+
+  auth:
+    build:
+      context: ./auth
+    volumes:
+      - ./auth:/var/www
+    environment:
+      DATABASE_URL: mysql://user:password@db:3306/auth_db
+    depends_on:
+      - db
+    ports:
+      - '8001:8000'
+
+  back:
+    build:
+      context: ./back
+    volumes:
+      - ./back:/var/www
+    environment:
+      DATABASE_URL: mysql://user:password@db:3306/back_db
+    depends_on:
+      - db
+    ports:
+      - '8002:8000'
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: main_db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+
+volumes:
+  db_data:
