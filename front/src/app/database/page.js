@@ -15,6 +15,7 @@ export default function Home() {
   const [selectedDatabase, setSelectedDatabase] = useState("");
   const { user, logout } = useContext(AuthContext);
   const router = useRouter();
+  const authURL = process.env.NEXT_PUBLIC_AUTH_URL;
 
   const handleModal = () => {
     setOpen(!open);
@@ -27,9 +28,9 @@ export default function Home() {
 
   const fetchDatabases = async () => {
     try {
-      const result = await fetcher("https://127.0.0.1:8000/database/get", "GET");
+      const result = await fetcher(`${authURL}/database/get`, "GET");
 
-      if (result) {
+      if (result && result.data !== "User has no database yet") {
         setDatabases(result.data);
       }
     } catch (err) {
@@ -40,7 +41,6 @@ export default function Home() {
 
   useEffect(() => {
       fetchDatabases();
-    
   }, []);
 
   return (

@@ -1,16 +1,17 @@
 import useSWR, { mutate } from "swr";
-import { Authfetcher } from "./Authfetcher";
+import { fetcher } from "./fetcher";
 import { useRouter } from "next/navigation";
 // import Cookies from 'js-cookie';
 
 export function useLogin() {
   const { data, error, mutate: swrMutate } = useSWR(null);
   const router = useRouter();
-  //   const { login: createSession } = useContext(AuthContext);
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+  //   const { login: createSession } = useContext(Context);
 
   const login = async (email, password) => {
     try {
-      const result = await Authfetcher("https://127.0.0.1:8000/login", "POST", { email, password });
+      const result = await fetcher(`${authUrl}/login`, "POST", { email, password });
 
       if (result) {
         const token = result;

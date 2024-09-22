@@ -15,13 +15,14 @@ const postgreCollations = [
 ];
 
 export default function PostDatabase() {
+  const authURL = process.env.NEXT_PUBLIC_AUTH_URL;
   const [dbName, setDbName] = useState("");
   const [dbType, setDbType] = useState("SQL");
   const [dbCollation, setDbCollation] = useState("utf8mb4_general_ci");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newDatabase = await fetcher("https://127.0.0.1:8000/database/new", "POST", { dbName, dbType, dbCollation });
+    const newDatabase = await fetcher(`${authURL}/database/new`, "POST", { dbName, dbType, dbCollation });
     console.log(newDatabase);
     
   };

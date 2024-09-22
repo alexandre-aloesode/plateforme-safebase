@@ -3,7 +3,8 @@ FROM php:8.2-fpm
 # Installer les extensions nécessaires pour Symfony et MariaDB
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libpq-dev libzip-dev \
-    && docker-php-ext-install intl pdo pdo_mysql zip
+    netcat-openbsd \
+    && docker-php-ext-install intl pdo pdo_mysql zip mysqli
 
 # Installer Symfony CLI
 RUN curl -sS https://get.symfony.com/cli/installer | bash
@@ -34,4 +35,4 @@ RUN /var/www/bin/composer install --no-interaction
 EXPOSE 8000
 
 # Démarrer le serveur Symfony
-CMD ["symfony", "server:start", "--no-tls", "--port=8000"]
+# CMD ["symfony", "server:start", "--no-tls", "--port=8000"]

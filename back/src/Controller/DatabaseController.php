@@ -18,16 +18,17 @@ class DatabaseController extends AbstractController
 
     public function __construct()
     {
-        $this->dbServer = $_ENV['MARIADB_SERVER'];
-        $this->dbPassword = $_ENV['MARIADB_PASSWORD'];
-        $this->dbAdmin = $_ENV['MARIADB_ADMIN'];
+        $this->dbServer = $_ENV['MARIADB_MAIN_SERVER'];
+        $this->dbPassword = $_ENV['MARIADB_MAIN_PASSWORD'];
+        $this->dbAdmin = $_ENV['MARIADB_MAIN_ADMIN'];
     }
 
     #[Route('/db/new', name: 'new_db')]
     public function postDatabases(Request $request): JsonResponse
     {
         $request_params = json_decode($request->getContent(), true);
-        return new JsonResponse(['error' => 'Unauthorized'], 401);
+        if(!$request_params) return new JsonResponse(['status' => 'error', 'error' => 'Invalid request'], 400);
+
         $token_decoder = new TokenDecoder('secret');
         $token = $token_decoder->token_verify($request_params['token']);
         if ($token === false) return new JsonResponse(['status' => 'error', 'error' => 'Unauthorized'], 401);

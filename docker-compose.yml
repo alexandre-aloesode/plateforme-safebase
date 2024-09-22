@@ -9,41 +9,98 @@ services:
     volumes:
       - ./front:/app
     depends_on:
-      - db
+      - auth_db
+      - main_db
+      - backup_db
 
   auth:
     build:
       context: ./auth
     volumes:
       - ./auth:/var/www
+      - ./project_docker_init/auth_entry_point.sh:/usr/local/bin/auth_entry_point.sh
+      - ./project_docker_init/auth_script:/docker-entrypoint-initdb.d
+      - ./project_docker_init/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
-      DATABASE_URL: mysql://user:password@db:3306/auth_db
+      DATABASE_URL: mysql://authUser:authPassword@auth_db:3306/auth_db
+      # BACK_API_URL: http://back:8002/api
     depends_on:
-      - db
+      - auth_db
+      # - back
     ports:
       - '8001:8000'
+    entrypoint: ["/usr/local/bin/auth_entry_point.sh"]
 
   back:
     build:
       context: ./back
     volumes:
       - ./back:/var/www
+      - ./project_docker_init/back_entry_point.sh:/usr/local/bin/back_entry_point.sh
+      - ./project_docker_init/back_script:/docker-entrypoint-initdb.d
+      - ./project_docker_init/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
-      DATABASE_URL: mysql://user:password@db:3306/back_db
+      DATABASE_URL: mysql://mainUser:mainPassword@main_db:3306/main_db
     depends_on:
-      - db
+      - main_db
+      - backup_db
     ports:
-      - '8002:8000'
+      - '8004:8003'
+    entrypoint: ["/usr/local/bin/back_entry_point.sh"]
 
-  db:
+  auth_db:
     image: mariadb:latest
+    container_name: auth_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: authUser
+      MYSQL_PASSWORD: authPassword
+    volumes:
+      - auth_db_data:/var/lib/mysql
+    ports:
+      - '3307:3306'
+
+  main_db:
+    image: mariadb:latest
+    container_name: main_db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: main_db
+      MYSQL_USER: mainUser
+      MYSQL_PASSWORD: mainPassword
     volumes:
-      - db_data:/var/lib/mysql
+      - main_db_data:/var/lib/mysql
     ports:
       - '3306:3306'
 
+  backup_db:
+    image: mariadb:latest
+    container_name: backup_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: backup_db
+      MYSQL_USER: backupUser
+      MYSQL_PASSWORD: backupPassword
+    volumes:
+      - backup_db_data:/var/lib/mysql
+    ports:
+      - '3308:3306'
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOSTS: auth_db,main_db,backup_db
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    depends_on:
+      - auth_db
+      - main_db
+      - backup_db
+    ports:
+      - '8085:80'
+
 volumes:
-  db_data:
+  auth_db_data:
+  main_db_data:
+  backup_db_data:
