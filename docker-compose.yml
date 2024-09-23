@@ -19,7 +19,6 @@ services:
     volumes:
       - ./auth:/var/www
       - ./project_docker_init/auth_entry_point.sh:/usr/local/bin/auth_entry_point.sh
-      - ./project_docker_init/auth_script:/docker-entrypoint-initdb.d
       - ./project_docker_init/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
       DATABASE_URL: mysql://authUser:authPassword@auth_db:3306/auth_db
@@ -37,7 +36,6 @@ services:
     volumes:
       - ./back:/var/www
       - ./project_docker_init/back_entry_point.sh:/usr/local/bin/back_entry_point.sh
-      - ./project_docker_init/back_script:/docker-entrypoint-initdb.d
       - ./project_docker_init/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
       DATABASE_URL: mysql://mainUser:mainPassword@main_db:3306/main_db
@@ -58,6 +56,7 @@ services:
       MYSQL_PASSWORD: authPassword
     volumes:
       - auth_db_data:/var/lib/mysql
+      - ./project_docker_init/auth_script:/docker-entrypoint-initdb.d
     ports:
       - '3307:3306'
 
@@ -71,6 +70,7 @@ services:
       MYSQL_PASSWORD: mainPassword
     volumes:
       - main_db_data:/var/lib/mysql
+      - ./project_docker_init/back_script:/docker-entrypoint-initdb.d
     ports:
       - '3306:3306'
 
