@@ -56,7 +56,6 @@ services:
       MYSQL_PASSWORD: authPassword
     volumes:
       - auth_db_data:/var/lib/mysql
-      # - ./project_docker_init/auth_script:/docker-entrypoint-initdb.d
     ports:
       - '3307:3306'
 
@@ -70,7 +69,7 @@ services:
       MYSQL_PASSWORD: mainPassword
     volumes:
       - main_db_data:/var/lib/mysql
-      - ./project_docker_init/back_script:/docker-entrypoint-initdb.d
+      - ./back/sql:/docker-entrypoint-initdb.d
     ports:
       - '3306:3306'
 

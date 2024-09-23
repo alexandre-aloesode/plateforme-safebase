@@ -142,9 +142,10 @@ class DatabaseController extends AbstractController
 
     // Commande mysqldump avec chaque argument séparé dans un tableau
     $process = new Process([
-        'mysqldump', 
-        '--user=' . $_ENV['MARIADB_ADMIN'], 
-        '--password=' . $_ENV['MARIADB_PASSWORD'], 
+        'mysqldump',
+        '--host=' . $_ENV['MARIADB_MAIN_SERVER'],
+        '--user=' . $_ENV['MARIADB_MAIN_ADMIN'], 
+        '--password=' . $_ENV['MARIADB_MAIN_PASSWORD'],
         '--no-data', 
         $request_params['dbName']
     ]);
@@ -190,8 +191,8 @@ class DatabaseController extends AbstractController
         // if ($token == false) {
         //     return new JsonResponse(['error' => 'Unauthorized'], 401);
         // } else {
-        //     $dbPassword = $_ENV['MARIADB_PASSWORD'];
-        //     $dbAdmin = $_ENV['MARIADB_ADMIN'];
+        //     $dbPassword = $_ENV['MARIADB_MAIN_PASSWORD'];
+        //     $dbAdmin = $_ENV['MARIADB_MAIN_ADMIN'];
         //     $mysqli = new \mysqli('127.0.0.1', $dbAdmin, $dbPassword);
         //     $forbidden = ['information_schema', 'performance_schema', 'mysql', 'sys', 'phpmyadmin', 'plateforme-safebase-auth'];
 

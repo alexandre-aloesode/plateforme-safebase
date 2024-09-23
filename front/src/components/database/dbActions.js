@@ -6,13 +6,14 @@ export default function DatabaseActions({ selectedDatabase }) {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     if (selectedDatabase && selectedDatabase !== "") {
       setLoading(true);
       const fetchTables = async () => {
         try {
-          const result = await fetcher(`https://127.0.0.1:8001/database/${selectedDatabase}/recap`, "GET");
+          const result = await fetcher(`${apiURL}/database/${selectedDatabase}/recap`, "GET");
           if (result) {
             console.log(result);
             setTables(result.tables);
@@ -34,7 +35,7 @@ export default function DatabaseActions({ selectedDatabase }) {
 
   const handleDump = async () => {
     try {
-      const result = await fetcher("https://127.0.0.1:8001/database/dump", "POST", {
+      const result = await fetcher(`${apiURL}/database/dump`, "POST", {
         dbName: selectedDatabase,
       });
 
